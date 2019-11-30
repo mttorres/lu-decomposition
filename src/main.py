@@ -31,7 +31,7 @@ def main():
 
 
         if(line == "B= CANNONi"):
-            B.extend([ [1 if i == j else 0 for j in range(len(A))]
+            B.extend([ [1.0 if i == j else 0.0 for j in range(len(A))]
                         for i in range(len(A)) ])
             controlCanno = True
 
@@ -62,7 +62,7 @@ def readA(A,line,controlTipoInt,controlTipoFloat):
 
 def readB(B,line,controlTipoInt,controlTipoFloat):
     if (controlTipoInt):
-        B.append([int(x) for x in line.split()])
+        B.append([float(x) for x in line.split()])
     if (controlTipoFloat):
         B.append([float(x) for x in line.split()])
 
