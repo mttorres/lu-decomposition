@@ -1,4 +1,4 @@
-
+from numpy import matmul
 
 #cria matriz identidade para facilitar operações
 def criaIdentidade(n):
@@ -12,29 +12,37 @@ def trocaLinha(a,lineindex1,lineindex2):
     a[lineindex1] = a[lineindex2]
     a[lineindex2] = temp
 
-#realiza a operação de eliminação de gaus para cada membro da linha: li = aij - (aij/pivo)*(linhaPivo)
-def eliminacaoGauss(a,pivoindex,lineindex):
-    a[lineindex] =  [
-            (a[lineindex][x] - ( (a[lineindex][x]/a[pivoindex][pivoindex] )*a[pivoindex][x] ) )
-            for x in range(0,len(a[lineindex]))
+#realiza a operação de eliminação de gaus para cada linha(abaixo do pivo): li = aij - (aij/pivo)*(linhaPivo)
+def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
+    while(lineindex < n):
+        a[lineindex] =  [
+            (a[lineindex][x] - ( (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*a[pivoindex][x] ) )
+            for x in range(0,n)
             ]
 
+        I = criaIdentidade(n)
+        #guarda os coeficientes na matriz Ei
+        I[lineindex][pivoindex] = (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*(-1)
+
+        operacoes.append(I)
+        #guarda um vetor de operacoes Ei
+
+        lineindex+=1
 
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
-    #posXpivo = i # fixamos o 0,0 como inicio (depois é 1,1, ... n,n)
-    #é alguma das linhas da vez da chamada
-    while(posXpivo < n):
-        maior = A[posXpivo][posXpivo] # recebe 0,0 ou 1,1 .. nn
+    maior = A[posXpivo][posXpivo]
 
-        for i in range(1+posXpivo,n):
-            if(maior < A[i][posXpivo]):
-                maior = A[i][posXpivo]
-                mudanca = i
+    for i in range(1+posXpivo,n):
+        if(maior < abs(A[i][posXpivo]) ):
+            maior = A[i][posXpivo]
+            mudanca = i
 
         if(mudanca != posXpivo):
-            permutacoes = trocaLinha(A,posXpivo,mudanca)
-
+            trocaLinha(A, posXpivo, mudanca)
+            I = criaIdentidade(n)
+            trocaLinha(I,posXpivo, mudanca)
+            permutacoes.append(I)
 
 
 
@@ -43,20 +51,30 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
 
 
 #cria a matriz A' (após pivoteamento parcial)
-def criaEscalonada(A,n):
-    operacoes = [] # matrizes E(eliminações gauss)
-    permutacoes = [] # matrizes P (trocas de linhas
-    return A
+def criaEscalonada(A,n,operacoes,permutacoes):
+    for i in range(0,n):
+        PivoteamentoParcial(A,permutacoes,n,i)
+        # ao fim desse processo ele ja vai ter a LINHA ATUAL AJUSTADA e guardou a permutacao de linha na matriz "permutacoes"
+        #pode realizar eliminacao de Gauss
+        eliminacaoGauss(A,i,i+1,n,operacoes)
 
 
-
+def criarL(operacoes,permutacoes):
+    L = []
+    # deve criar (Enx...E1^)
+    # onde Ei^ = (Pi+1)X Ei X(Pi+1)
+    return L
 
 #operação LU
 def operation(A,B,controlCanon):
-    n = len(A)
 
-    L = criaIdentidade(n)
-    U = criaEscalonada(A,n)
+    #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
+    n = len(A)
+    operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
+    permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
+    criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' !
+
+    L = criarL(operacoes,permutacoes)
 
     #print()
     #print(L)
