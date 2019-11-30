@@ -76,7 +76,16 @@ def operation(A,B,controlCanon):
 
     L = criarL(operacoes,permutacoes)
 
-    #print()
-    #print(L)
+    print(operacoes)
+    print(permutacoes)
+    print(L)
 
 
+
+
+
+
+# testando
+
+A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
+operation(A,[],False)
