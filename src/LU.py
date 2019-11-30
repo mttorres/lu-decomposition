@@ -14,20 +14,19 @@ def trocaLinha(a,lineindex1,lineindex2):
 
 #realiza a operação de eliminação de gaus para cada linha(abaixo do pivo): li = aij - (aij/pivo)*(linhaPivo)
 def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
+    I = criaIdentidade(n)
     while(lineindex < n):
+        # guarda os coeficientes na matriz Ei
+        I[lineindex][pivoindex] = (a[lineindex][pivoindex] / a[pivoindex][pivoindex]) * (-1)
         a[lineindex] =  [
             (a[lineindex][x] - ( (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*a[pivoindex][x] ) )
             for x in range(0,n)
             ]
 
-        I = criaIdentidade(n)
-        #guarda os coeficientes na matriz Ei
-        I[lineindex][pivoindex] = (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*(-1)
-
-        operacoes.append(I)
         #guarda um vetor de operacoes Ei
 
         lineindex+=1
+    operacoes.append(I)
 
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
@@ -43,6 +42,7 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
             I = criaIdentidade(n)
             trocaLinha(I,posXpivo, mudanca)
             permutacoes.append(I)
+            mudanca = posXpivo
 
 
 
@@ -77,7 +77,8 @@ def operation(A,B,controlCanon):
     L = criarL(operacoes,permutacoes)
 
     print(operacoes)
-    print(permutacoes)
+    print()
+    print(permutacoes) # ta salvando corretamente
     print(L)
 
 
@@ -89,3 +90,4 @@ def operation(A,B,controlCanon):
 
 A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
 operation(A,[],False)
+print(A)
