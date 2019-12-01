@@ -1,4 +1,5 @@
 from numpy import matmul
+from numpy.linalg import inv
 
 #cria matriz identidade para facilitar operações
 def criaIdentidade(n):
@@ -26,8 +27,9 @@ def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
         #guarda um vetor de operacoes Ei
 
         lineindex+=1
-    operacoes.append(I)
-
+    if(n != pivoindex):
+        operacoes.append(I)
+        #evita salvar mais matrizes do que devia ao fim da iteração
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
     maior = A[posXpivo][posXpivo]
@@ -52,7 +54,7 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
 
 #cria a matriz A' (após pivoteamento parcial)
 def criaEscalonada(A,n,operacoes,permutacoes):
-    for i in range(0,n):
+    for i in range(0,n-1):
         PivoteamentoParcial(A,permutacoes,n,i)
         # ao fim desse processo ele ja vai ter a LINHA ATUAL AJUSTADA e guardou a permutacao de linha na matriz "permutacoes"
         #pode realizar eliminacao de Gauss
@@ -61,14 +63,28 @@ def criaEscalonada(A,n,operacoes,permutacoes):
 
 def criarL(operacoes,permutacoes):
     L = []
+    # rascunho:
     # deve criar (Enx...E1^)
     # onde Ei^ = (Pi+1)X Ei X(Pi+1)
+    # note que L deve ser triangular inferior!
+    # teste:
+    #com o caso do slide que é 3x3 funciona... o calculo de Ei^ ( e para mais que 3?) (testar)
+    for i in range(len(operacoes)-1,0,-1):
+        # note que ele so realiza essa operacao se ocorreu ALGUMA PERMUTACAO DE LINHA!
+        if(i == 1 and len(permutacoes) > 0):
+            Etiu = matmul(matmul(permutacoes[i],operacoes[i-1]),permutacoes[i]) # ex: P2E1P2
+            L = matmul(operacoes[i],Etiu)
+        else:
+            L = matmul(operacoes[i], operacoes[i - 1])
+
+    L = inv(L)
     return L
 
 #operação LU
 def operation(A,B,controlCanon):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
+
     n = len(A)
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
@@ -76,10 +92,19 @@ def operation(A,B,controlCanon):
 
     L = criarL(operacoes,permutacoes)
 
-    print(operacoes)
+
+    #resolver sistemas
+
+
+
+    # resultados(print, tem que salvar no arquivo dps)
+
+    print(operacoes) # ta salvando corretamente
     print()
     print(permutacoes) # ta salvando corretamente
-    print(L)
+    print()
+    print(L) # aparentemente esta salvando corretamente (deve ser triangular inferior)
+    print()
 
 
 
