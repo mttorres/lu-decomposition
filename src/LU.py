@@ -1,8 +1,35 @@
 from numpy import matmul
+from numpy.linalg import inv, det
+import copy
 from numpy.linalg import inv
 from numpy import asarray
 
-#cria matriz identidade para facilitar operações
+
+
+# O menor principal associado ao elemento aij é a matriz que se obtém eliminando a linha e a coluna e quem está o elemento aij, onde i=j
+def menorPrincipal(mat, i):
+    mat_menor = copy.deepcopy(mat)
+
+    del mat_menor[0]                            # Retira a primeira linha
+    for k in list(range(len(mat_menor))):       # Retira a coluna i
+        del mat_menor[k][i]
+    return mat_menor
+
+# Cálculo do determinante através do método de cofatores
+# Aij = (-1)^i+j . MCij
+def determinante(matriz):
+    mat = copy.deepcopy(matriz)
+    if len(mat) == 1:                           # Fim de cada pilha de recursão
+        return mat[0][0]
+    else:
+        val = 0
+        tam = len(mat)
+        for x in list(range(tam)):                                                              # na primeira linha encontrando cofatores
+            val += mat[0][x] * (-1) ** (2 + x) * determinante(menorPrincipal(mat, x))           # Somatorio dos elementos multiplicado por  seus cofactores
+        return val
+
+
+# cria matriz identidade para facilitar operações
 def criaIdentidade(n):
     return [[1.0 if i == j else 0.0 for j in range(n)]
                 for i in range(n)]
@@ -30,7 +57,9 @@ def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
         lineindex+=1
     if(n != pivoindex):
         operacoes.append(I)
-        #evita salvar mais matrizes do que devia ao fim da iteração
+        # evita salvar mais matrizes do que devia ao fim da iteração
+
+
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
     maior = A[posXpivo][posXpivo]
@@ -82,6 +111,7 @@ def operation(A,B,controlCanon):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
 
+
     n = len(A)
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
@@ -98,6 +128,7 @@ def operation(A,B,controlCanon):
 
     # resultados(print, tem que salvar no arquivo dps)
 
+    print()
     print(operacoes) # ta salvando corretamente
     print()
     print(permutacoes) # ta salvando corretamente
@@ -110,9 +141,26 @@ def operation(A,B,controlCanon):
 
 
 
+
+
+
 # testando
 
 A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
-#A = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
+A2 = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
 operation(A,[],False)
 print(asarray(A))
+
+operation(A2,[],False)
+
+print(asarray(A2))
+
+
+#### diferenca do determinante do NUMPY e o nosso
+print("--------------------------")
+determ = det(A2)
+print(determ)
+
+print("--------------------------")
+determ2 = determinante(A2)
+print(determ2)
