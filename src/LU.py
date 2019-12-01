@@ -110,7 +110,10 @@ def criarL(operacoes,permutacoes,n):
 def operation(A,B,controlCanon):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
-
+    if(determinante(A) == 0):
+        print("SISTEMA INVALIDO!")
+        #escrever isso no arquivo de saida
+        return
 
     n = len(A)
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
