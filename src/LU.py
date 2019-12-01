@@ -4,6 +4,31 @@ import copy
 from numpy.linalg import inv
 from numpy import asarray
 
+
+
+# O menor principal associado ao elemento aij é a matriz que se obtém eliminando a linha e a coluna e quem está o elemento aij, onde i=j
+def menorPrincipal(mat, i):
+    mat_menor = copy.deepcopy(mat)
+
+    del mat_menor[0]                            # Retira a primeira linha
+    for k in list(range(len(mat_menor))):       # Retira a coluna i
+        del mat_menor[k][i]
+    return mat_menor
+
+# Cálculo do determinante através do método de cofatores
+# Aij = (-1)^i+j . MCij
+def determinante(matriz):
+    mat = copy.deepcopy(matriz)
+    if len(mat) == 1:                           # Fim de cada pilha de recursão
+        return mat[0][0]
+    else:
+        val = 0
+        tam = len(mat)
+        for x in list(range(tam)):                                                              # na primeira linha encontrando cofatores
+            val += mat[0][x] * (-1) ** (2 + x) * determinante(menorPrincipal(mat, x))           # Somatorio dos elementos multiplicado por  seus cofactores
+        return val
+
+
 # cria matriz identidade para facilitar operações
 def criaIdentidade(n):
     return [[1.0 if i == j else 0.0 for j in range(n)]
@@ -86,6 +111,7 @@ def operation(A,B,controlCanon):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
 
+
     n = len(A)
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
@@ -102,6 +128,7 @@ def operation(A,B,controlCanon):
 
     # resultados(print, tem que salvar no arquivo dps)
 
+    print()
     print(operacoes) # ta salvando corretamente
     print()
     print(permutacoes) # ta salvando corretamente
@@ -109,27 +136,13 @@ def operation(A,B,controlCanon):
     print(L) # aparentemente esta salvando corretamente (deve ser triangular inferior)
     print()
 
-# O menor principal associado ao elemento aij é a matriz que se obtém eliminando a linha e a coluna e quem está o elemento aij, onde i=j
-def menorPrincipal(mat, i):
-    mat_menor = copy.deepcopy(mat)
 
-    del mat_menor[0]                            # Retira a primeira linha
-    for k in list(range(len(mat_menor))):       # Retira a coluna i
-        del mat_menor[k][i]
-    return mat_menor
 
-# Cálculo do determinante através do método de cofatores
-# Aij = (-1)^i+j . MCij
-def determinante(matriz):
-    mat = copy.deepcopy(matriz)
-    if len(mat) == 1:                           # Fim de cada pilha de recursão
-        return mat[0][0]
-    else:
-        val = 0
-        tam = len(mat)
-        for x in list(range(tam)):                                                              # na primeira linha encontrando cofatores
-            val += mat[0][x] * (-1) ** (2 + x) * determinante(menorPrincipal(mat, x))           # Somatorio dos elementos multiplicado por  seus cofactores
-        return val
+
+
+
+
+
 
 # testando
 
@@ -140,7 +153,10 @@ print(asarray(A))
 
 operation(A2,[],False)
 
-print(asarray(2))
+print(asarray(A2))
+
+
+#### diferenca do determinante do NUMPY e o nosso
 print("--------------------------")
 determ = det(A2)
 print(determ)
