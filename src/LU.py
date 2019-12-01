@@ -1,5 +1,6 @@
 from numpy import matmul
 from numpy.linalg import inv
+from numpy import asarray
 
 #cria matriz identidade para facilitar operações
 def criaIdentidade(n):
@@ -18,7 +19,7 @@ def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
     I = criaIdentidade(n)
     while(lineindex < n):
         # guarda os coeficientes na matriz Ei
-        I[lineindex][pivoindex] = (a[lineindex][pivoindex] / a[pivoindex][pivoindex]) * (-1)
+        I[lineindex][pivoindex] = (a[lineindex][pivoindex] / a[pivoindex][pivoindex])*(-1)
         a[lineindex] =  [
             (a[lineindex][x] - ( (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*a[pivoindex][x] ) )
             for x in range(0,n)
@@ -35,20 +36,15 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     maior = A[posXpivo][posXpivo]
 
     for i in range(1+posXpivo,n):
-        if(maior < abs(A[i][posXpivo]) ):
+        if(abs(maior) < abs(A[i][posXpivo]) ):
             maior = A[i][posXpivo]
             mudanca = i
 
-        if(mudanca != posXpivo):
-            trocaLinha(A, posXpivo, mudanca)
-            I = criaIdentidade(n)
-            trocaLinha(I,posXpivo, mudanca)
-            permutacoes.append(I)
-            mudanca = posXpivo
-
-
-
-
+    if (mudanca != posXpivo):
+        trocaLinha(A, posXpivo, mudanca)
+        I = criaIdentidade(n)
+        trocaLinha(I, posXpivo, mudanca)
+        permutacoes.append(I)
 
 
 
@@ -61,19 +57,17 @@ def criaEscalonada(A,n,operacoes,permutacoes):
         eliminacaoGauss(A,i,i+1,n,operacoes)
 
 
-def criarL(operacoes,permutacoes):
+def criarL(operacoes,permutacoes,n):
     L = []
-    # rascunho:
     # deve criar (Enx...E1^)
     # onde Ei^ = (Pi+1)X Ei X(Pi+1)
     # note que L deve ser triangular inferior!
-    # teste:
-    #com o caso do slide que é 3x3 funciona... o calculo de Ei^ ( e para mais que 3?) (testar)
     for i in range(len(operacoes)-1,0,-1):
+
         # note que ele so realiza essa operacao se ocorreu ALGUMA PERMUTACAO DE LINHA!
         if(i == 1 and len(permutacoes) > 0):
-            Etiu = matmul(matmul(permutacoes[i],operacoes[i-1]),permutacoes[i]) # ex: P2E1P2
-            L = matmul(operacoes[i],Etiu)
+            Etiu = matmul(matmul(permutacoes[i],operacoes[i-1]),permutacoes[i])
+            L = matmul(L,Etiu)
         else:
             L = matmul(operacoes[i], operacoes[i - 1])
 
@@ -90,7 +84,9 @@ def operation(A,B,controlCanon):
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
     criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' !
 
-    L = criarL(operacoes,permutacoes)
+
+
+    L = criarL(operacoes,permutacoes,n)
 
 
     #resolver sistemas
@@ -113,6 +109,7 @@ def operation(A,B,controlCanon):
 
 # testando
 
-A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
+#A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
+A = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
 operation(A,[],False)
-print(A)
+print(asarray(A))
