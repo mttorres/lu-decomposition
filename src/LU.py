@@ -67,7 +67,10 @@ def criarL(operacoes,permutacoes,n):
         # note que ele so realiza essa operacao se ocorreu ALGUMA PERMUTACAO DE LINHA!
         if(i == 1 and len(permutacoes) > 0):
             Etiu = matmul(matmul(permutacoes[i],operacoes[i-1]),permutacoes[i])
-            L = matmul(L,Etiu)
+            if(len(L) != 0 ):
+                L = matmul(L,Etiu)
+            else:
+                L = matmul(operacoes[i], Etiu)
         else:
             L = matmul(operacoes[i], operacoes[i - 1])
 
@@ -109,7 +112,7 @@ def operation(A,B,controlCanon):
 
 # testando
 
-#A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
-A = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
+A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
+#A = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
 operation(A,[],False)
 print(asarray(A))
