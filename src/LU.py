@@ -1,19 +1,20 @@
 from numpy import matmul
-from numpy.linalg import inv
+from numpy.linalg import inv, det
+import copy
 
-#cria matriz identidade para facilitar operações
+# cria matriz identidade para facilitar operações
 def criaIdentidade(n):
     return [[1.0 if i == j else 0.0 for j in range(n)]
                 for i in range(n)]
 
 
-#troca linha 1 por linha 2
+# troca linha 1 por linha 2
 def trocaLinha(a,lineindex1,lineindex2):
     temp = a[lineindex1]
     a[lineindex1] = a[lineindex2]
     a[lineindex2] = temp
 
-#realiza a operação de eliminação de gaus para cada linha(abaixo do pivo): li = aij - (aij/pivo)*(linhaPivo)
+# realiza a operação de eliminação de gaus para cada linha(abaixo do pivo): li = aij - (aij/pivo)*(linhaPivo)
 def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
     I = criaIdentidade(n)
     while(lineindex < n):
@@ -23,13 +24,13 @@ def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
             (a[lineindex][x] - ( (a[lineindex][pivoindex]/a[pivoindex][pivoindex] )*a[pivoindex][x] ) )
             for x in range(0,n)
             ]
-
-        #guarda um vetor de operacoes Ei
-
+        # guarda um vetor de operacoes Ei
         lineindex+=1
     if(n != pivoindex):
         operacoes.append(I)
-        #evita salvar mais matrizes do que devia ao fim da iteração
+        # evita salvar mais matrizes do que devia ao fim da iteração
+
+
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
     maior = A[posXpivo][posXpivo]
@@ -47,17 +48,12 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
             mudanca = posXpivo
 
 
-
-
-
-
-
-#cria a matriz A' (após pivoteamento parcial)
+# cria a matriz A' (após pivoteamento parcial)
 def criaEscalonada(A,n,operacoes,permutacoes):
     for i in range(0,n-1):
         PivoteamentoParcial(A,permutacoes,n,i)
         # ao fim desse processo ele ja vai ter a LINHA ATUAL AJUSTADA e guardou a permutacao de linha na matriz "permutacoes"
-        #pode realizar eliminacao de Gauss
+        # pode realizar eliminacao de Gauss
         eliminacaoGauss(A,i,i+1,n,operacoes)
 
 
@@ -68,7 +64,7 @@ def criarL(operacoes,permutacoes):
     # onde Ei^ = (Pi+1)X Ei X(Pi+1)
     # note que L deve ser triangular inferior!
     # teste:
-    #com o caso do slide que é 3x3 funciona... o calculo de Ei^ ( e para mais que 3?) (testar)
+    # com o caso do slide que é 3x3 funciona... o calculo de Ei^ ( e para mais que 3?) (testar)
     for i in range(len(operacoes)-1,0,-1):
         # note que ele so realiza essa operacao se ocorreu ALGUMA PERMUTACAO DE LINHA!
         if(i == 1 and len(permutacoes) > 0):
@@ -106,13 +102,38 @@ def operation(A,B,controlCanon):
     print(L) # aparentemente esta salvando corretamente (deve ser triangular inferior)
     print()
 
+# O menor principal associado ao elemento aij é a matriz que se obtém eliminando a linha e a coluna e quem está o elemento aij, onde i=j
+def menorPrincipal(mat, i):
+    mat_menor = copy.deepcopy(mat)
 
+    del mat_menor[0]                            # Retira a primeira linha
+    for k in list(range(len(mat_menor))):       # Retira a coluna i
+        del mat_menor[k][i]
+    return mat_menor
 
-
-
+# Cálculo do determinante através do método de cofatores
+# Aij = (-1)^i+j . MCij
+def determinante(matriz):
+    mat = copy.deepcopy(matriz)
+    if len(mat) == 1:                           # Fim de cada pilha de recursão
+        return mat[0][0]
+    else:
+        val = 0
+        tam = len(mat)
+        for x in list(range(tam)):                                                              # na primeira linha encontrando cofatores
+            val += mat[0][x] * (-1) ** (2 + x) * determinante(menorPrincipal(mat, x))           # Somatorio dos elementos multiplicado por  seus cofactores
+        return val
 
 # testando
 
 A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
-operation(A,[],False)
+A2 = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
+operation(A2,[],False)
 print(A)
+print("--------------------------")
+determ = det(A2)
+print(determ)
+
+print("--------------------------")
+determ2 = determinante(A2)
+print(determ2)
