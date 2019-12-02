@@ -6,20 +6,32 @@ equações com n incógnitas pelo método da Fatoração LU com a estratégia do
 parcial. 
 
 
-O problema teste é o seguinte: aplique o programa para obter a inversa da matriz
-
-A=
-
-4 -1 0 -1 0 0 \n
--1 4 -1 0 -1 0 \n
-0 -1 4 0 0 -1 \n
--1 0 0 4 -1 0 \n
-0 -1 0 -1 4 -1 \n
-0 0 -1 0 -1 4 \n
 
 
 Como rodar o programa? 
 
+0. Edite o arquivo SISTEMA na pasta /resource e informe os valores desejados da seguinte forma:
+    
+    A=
+    linha1
+    ...
+    linhaN
+    
+    B=
+    linha1
+    ...
+    linhaN
+    
+    ou (caso deseje calcular a inversa da matriz A)(calcular a inversa por fatoração LU)
+    
+    A=
+    linha1
+    ...
+    linhaN
+    
+    B= CANNONi 
+    
+    
 1. Entre no virtual environment:
     
     * On **Linux** or **macOS**:
