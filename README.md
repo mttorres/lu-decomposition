@@ -9,6 +9,7 @@ parcial.
 O problema teste é o seguinte: aplique o programa para obter a inversa da matriz
 
 A=
+
 4 -1 0 -1 0 0
 -1 4 -1 0 -1 0
 0 -1 4 0 0 -1
