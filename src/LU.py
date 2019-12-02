@@ -5,7 +5,6 @@ from numpy.linalg import inv
 from numpy import asarray
 
 
-
 # O menor principal associado ao elemento aij é a matriz que se obtém eliminando a linha e a coluna e quem está o elemento aij, onde i=j
 def menorPrincipal(mat, i):
     mat_menor = copy.deepcopy(mat)
@@ -42,6 +41,7 @@ def trocaLinha(a,lineindex1,lineindex2):
     a[lineindex2] = temp
 
 #realiza a operação de eliminação de gaus para cada linha(abaixo do pivo): li = aij - (aij/pivo)*(linhaPivo)
+# também guarda todas as operações sob o ponto de vista matricial na matriz operacoes
 def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
     I = criaIdentidade(n)
     while(lineindex < n):
@@ -60,6 +60,7 @@ def eliminacaoGauss(a,pivoindex,lineindex,n,operacoes):
         # evita salvar mais matrizes do que devia ao fim da iteração
 
 
+# realiza o pivoteamento parcial e guarda as matrizes que representam as trocas de linhas em uma matriz permutacoes
 def PivoteamentoParcial(A,permutacoes,n,posXpivo):
     mudanca = posXpivo
     maior = A[posXpivo][posXpivo]
@@ -81,16 +82,19 @@ def PivoteamentoParcial(A,permutacoes,n,posXpivo):
 def criaEscalonada(A,n,operacoes,permutacoes):
     for i in range(0,n-1):
         PivoteamentoParcial(A,permutacoes,n,i)
-        # ao fim desse processo ele ja vai ter a LINHA ATUAL AJUSTADA e guardou a permutacao de linha na matriz "permutacoes"
+        # ao fim desse processo ele ja vai ter a LINHA ATUAL AJUSTADA e guardou a permutacao das linhas na matriz "permutacoes"
         #pode realizar eliminacao de Gauss
         eliminacaoGauss(A,i,i+1,n,operacoes)
 
 
+# cria a matriz L utilizando as operações realizadas na eliminação de gauss
 def criarL(operacoes,permutacoes,n):
     L = []
-    # deve criar (Enx...E1^)
+    # deve criar (En x ... x E1^)(multiplicao de matrizes)
     # onde Ei^ = (Pi+1)X Ei X(Pi+1)
     # note que L deve ser triangular inferior!
+
+    # multiplica as matrizes para criar Ei^
     for i in range(len(operacoes)-1,0,-1):
 
         # note que ele so realiza essa operacao se ocorreu ALGUMA PERMUTACAO DE LINHA!
@@ -146,10 +150,6 @@ def resolveSistema(A, L, Blinha,n):
     retroSub(L,Y,Blinha,n,modo='L')
     retroSub(A, X, Y, n, modo='U')
 
-    print("####RESULTADOS#####")
-    print(X)
-    print(Y)
-    print("####RESULTADOS#####")
 
 
 
@@ -160,63 +160,90 @@ def resolveSistema(A, L, Blinha,n):
 
 
 #operação LU
-def operation(A,B,controlCanon):
+def operation(A,B,controlCanon,saida):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
     det = determinante(A)
     if(det == 0):
-        print("SISTEMA INVALIDO!")
+        saida.write("SISTEMA INVALIDO!\n")
+        saida.write("DETERMINANTE = 0 ! \n")
+        saida.write("\n")
         #escrever isso no arquivo de saida
         return
 
+    # preparar para realizar as operacoes LU e escrever dados do sistema no arquivo
     n = len(A)
-    print("######################### SISTEMA ###########")
-    print("A: ")
-    print()
-    print(asarray(A))
-    print("B: ")
-    print()
-    print(B)
-    print()
-    print("Determinante")
-    print(det)
-    print()
-
-
+    saida.write("######################### SISTEMA #########################\n")
+    saida.write("\n")
+    saida.write("A: ")
+    saida.write("\n")
+    saida.write(str(asarray(A)))
+    saida.write("\n")
+    saida.write("B: ")
+    saida.write("\n")
+    saida.write(str(B))
+    saida.write("\n")
+    saida.write("Determinante:")
+    saida.write("\n")
+    saida.write(str(det))
+    saida.write("\n")
 
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
-    criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' !
+    criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' = U !
     L = criarL(operacoes,permutacoes,n) # criar L usando as operações realizadas anteriormente
 
-    print()
-    print(operacoes)  # ta salvando corretamente
-    print()
-    print(permutacoes)  # ta salvando corretamente
-    print()
-    print(L)  # aparentemente esta salvando corretamente (deve ser triangular inferior)
-
+    saida.write("\n")
+    saida.write("Matrizes que representam as operações realizadas na eliminação de Gauss: \n")
+    saida.write("\n")
+    saida.write(str(asarray(operacoes)))
+    saida.write("\n")
+    saida.write("Matrizes que representam as permutações realizadas na eliminação de Gauss: \n")
+    saida.write("\n")
+    saida.write(str(asarray(permutacoes)))
+    saida.write("\n")
+    saida.write("\n")
+    saida.write("L:\n")
+    saida.write(str(L))
+    saida.write("\n")
+    saida.write("U:\n")
+    saida.write(str(asarray(A)))
+    saida.write("\n")
+    saida.write("\n")
+    saida.write("Resolvendo o sistema...... \n")
+    saida.write("\n")
 
 
     # e finalmente resolver os sistemas LY = B' e UX = Y respectivamente
     #se controlCannon é true ele resolve N sistemas iterando sobre os diversos membros da matriz B (N bases canonicas)
     #ou seja ele esta calculando a inversa da matriz A
+
+    RESPOSTA = []
+
     if(controlCanon):
         for i in range(0,n):
             Blinha = permutarB(permutacoes, B[i])  # criar PB = B'
-            resolveSistema(A,L,Blinha,n)
+            #constroi a cada iteracao a matriz inversa(vai  adicionando cada parte da matriz a matriz RESPOSTA)
+            RESPOSTA.append(resolveSistema(A,L,Blinha,n))
 
-    #resolve o sistema uma vez só por fatoração LU
+
+    #senao resolve o sistema uma vez só por fatoração LU
     else:
-
         Blinha = permutarB(permutacoes, B)  # criar PB = B'
-        print("B após permutações (B'): ")
-        print(Blinha)
-        print()
-        resolveSistema(A,L,Blinha,n)
+        saida.write("B após permutações (B'): \n")
+        saida.write("\n")
+        saida.write(str(Blinha))
+        saida.write("\n")
+        RESPOSTA = resolveSistema(A,L,Blinha,n)
+
+    saida.write("\n")
+    saida.write("RESPOSTA: \n")
+    saida.write(str(asarray(RESPOSTA)))
+    saida.write("\n")
+    saida.write("##################################################\n")
+    return
 
 
-    # resultados(print, tem que salvar no arquivo dps)
 
 
 
@@ -225,8 +252,7 @@ def operation(A,B,controlCanon):
 
 
 
-
-''''''
+'''
 # testando
 A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
 B2 = [3,6,-16,18]
@@ -254,3 +280,4 @@ determ = det(A2)
 
 print("--------------------------")
 determ2 = determinante(A2)
+'''''
