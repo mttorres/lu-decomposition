@@ -31,6 +31,7 @@ Como rodar o programa?
     
     B= CANNONi 
     
+    *Existem exemplos de entrada na pasta /resource.
     
 1. Entre no virtual environment:
     
