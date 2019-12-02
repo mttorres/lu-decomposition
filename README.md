@@ -10,12 +10,12 @@ O problema teste é o seguinte: aplique o programa para obter a inversa da matri
 
 A=
 
-4 -1 0 -1 0 0
--1 4 -1 0 -1 0
-0 -1 4 0 0 -1
--1 0 0 4 -1 0
-0 -1 0 -1 4 -1
-0 0 -1 0 -1 4.
+4 -1 0 -1 0 0 \n
+-1 4 -1 0 -1 0 \n
+0 -1 4 0 0 -1 \n
+-1 0 0 4 -1 0 \n
+0 -1 0 -1 4 -1 \n
+0 0 -1 0 -1 4 \n
 
 
 Como rodar o programa? 
