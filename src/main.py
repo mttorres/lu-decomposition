@@ -58,8 +58,8 @@ def main():
 
         # esta lendo B
         elif(controlReadB and line != "B=\n"):
-
-            readB(B,line,controlTipoInt,controlTipoFloat)
+            B = readB(B,line,controlTipoInt,controlTipoFloat)
+            controlReadB = False
 
         #realiza a operacao LU apos a leitura de A e B do sistema da vez
         if(len(A) != 0 and len(B) != 0 and controlReadA == False and controlReadB == False and proximoSistema == True):
@@ -82,9 +82,11 @@ def readA(A,line,controlTipoInt,controlTipoFloat):
 # le os valores para B utilizando a precisao Int ou Float
 def readB(B,line,controlTipoInt,controlTipoFloat):
     if (controlTipoInt):
-        B.append([float(x) for x in line.split()])
+        B = [int(x) for x in line.split()]
+        return B
     if (controlTipoFloat):
-        B.append([float(x) for x in line.split()])
+        B = [float(x) for x in line.split()]
+        return B
 
 
 if __name__ == '__main__':

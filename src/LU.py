@@ -259,7 +259,7 @@ def operation(A,B,controlCanon,saida):
     #senao resolve o sistema uma vez só por fatoração LU
     else:
         Blinha = permutarB(permutacoes, B)  # criar PB = B'
-        saida.write("B após permutações (B'): \n")
+        saida.write("B apos permutacoes (B'): \n")
         saida.write("\n")
         saida.write(str(Blinha))
         saida.write("\n")
