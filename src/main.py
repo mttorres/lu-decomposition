@@ -50,7 +50,7 @@ def main():
     print(A)
     print()
     print(B)
-    LU.operation(A,B,controlCanno)
+    #LU.operation(A,B,controlCanno)
     controlCanno = False
     entrada.close()
 

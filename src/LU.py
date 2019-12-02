@@ -106,38 +106,118 @@ def criarL(operacoes,permutacoes,n):
     L = inv(L)
     return L
 
+
+def permutarB(permutacoes, B):
+    for i in range(0,len(permutacoes)):
+        B = matmul(permutacoes[i],B)
+    return B
+
+
+def retroSub(A,X,B,n,modo):
+    #ORDEM PADRAO
+    if(modo == 'U'):
+        for i in range(n-1, -1, -1):
+            if(i == n-1):
+                X.append(B[i]/A[i][i])
+            else:
+                X.insert(0,B[i])
+                for j in range(n-1,i,-1):
+                    X[0] -= ( A[i][j]*X[j-i] )
+
+                X[0] = X[0]/A[i][i]
+
+    #ORDEM REVERSA
+    if(modo == 'L'):
+        for i in range(0,n):
+            if(i == 0):
+                X.append(B[i] / A[i][i])
+            else:
+                X.append(B[i])
+                for j in range(0,i):
+                    X[i] -= ( A[i][j] * X[j] )
+
+                X[i] = X[i] / A[i][i]
+
+def resolveSistema(A, L, Blinha,n):
+    X = []
+    Y = []
+
+    #retrosubstituicao
+    retroSub(L,Y,Blinha,n,modo='L')
+    retroSub(A, X, Y, n, modo='U')
+
+    print("####RESULTADOS#####")
+    print(X)
+    print(Y)
+    print("####RESULTADOS#####")
+
+
+
+
+
+
+
+
+
 #operação LU
 def operation(A,B,controlCanon):
 
     #calcular determinante para saber se pode realizar a operacoes (se nao puder disparar erro)
-    if(determinante(A) == 0):
+    det = determinante(A)
+    if(det == 0):
         print("SISTEMA INVALIDO!")
         #escrever isso no arquivo de saida
         return
 
     n = len(A)
+    print("######################### SISTEMA ###########")
+    print("A: ")
+    print()
+    print(asarray(A))
+    print("B: ")
+    print()
+    print(B)
+    print()
+    print("Determinante")
+    print(det)
+    print()
+
+
+
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
     criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' !
+    L = criarL(operacoes,permutacoes,n) # criar L usando as operações realizadas anteriormente
+
+    print()
+    print(operacoes)  # ta salvando corretamente
+    print()
+    print(permutacoes)  # ta salvando corretamente
+    print()
+    print(L)  # aparentemente esta salvando corretamente (deve ser triangular inferior)
 
 
 
-    L = criarL(operacoes,permutacoes,n)
+    # e finalmente resolver os sistemas LY = B' e UX = Y respectivamente
+    #se controlCannon é true ele resolve N sistemas iterando sobre os diversos membros da matriz B (N bases canonicas)
+    #ou seja ele esta calculando a inversa da matriz A
+    if(controlCanon):
+        for i in range(0,n):
+            Blinha = permutarB(permutacoes, B[i])  # criar PB = B'
+            resolveSistema(A,L,Blinha,n)
 
+    #resolve o sistema uma vez só por fatoração LU
+    else:
 
-    #resolver sistemas
-
+        Blinha = permutarB(permutacoes, B)  # criar PB = B'
+        print("B após permutações (B'): ")
+        print(Blinha)
+        print()
+        resolveSistema(A,L,Blinha,n)
 
 
     # resultados(print, tem que salvar no arquivo dps)
 
-    print()
-    print(operacoes) # ta salvando corretamente
-    print()
-    print(permutacoes) # ta salvando corretamente
-    print()
-    print(L) # aparentemente esta salvando corretamente (deve ser triangular inferior)
-    print()
 
 
 
@@ -146,24 +226,31 @@ def operation(A,B,controlCanon):
 
 
 
-
+''''''
 # testando
-
 A = [[1,4,3],[2,5,4],[1/2,-3,-2]]
+B2 = [3,6,-16,18]
 A2 = [[3,2,0,1],[9,8,-3,4],[-6,4,-8,0],[3,-8,3,-4]]
-operation(A,[],False)
-print(asarray(A))
 
-operation(A2,[],False)
 
-print(asarray(A2))
+BT = []
+BT.extend([ [1.0 if i == j else 0.0 for j in range(6)]
+                        for i in range(6) ])
+
+
+#operation(A,[],False)
+#print(asarray(A))
+
+operation(A2,B2,False)
+print()
+
+
 
 
 #### diferenca do determinante do NUMPY e o nosso
 print("--------------------------")
 determ = det(A2)
-print(determ)
+
 
 print("--------------------------")
 determ2 = determinante(A2)
-print(determ2)
