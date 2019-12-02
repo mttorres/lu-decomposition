@@ -1,13 +1,16 @@
 from src import LU
 
 def main():
+    # arquivos
     entrada = open("../resource/SISTEMA.txt",'r')
     saida = open("../resource/RESUL.txt",'w+')
+    # variaveis de controle de leitura do arquivo
     controlReadA = False
     controlReadB = False
     controlTipoInt = False
     controlTipoFloat = False
     controlCannon = False
+    proximoSistema = True
     A = []
     B = []
     # le a entrada
@@ -18,6 +21,7 @@ def main():
 
         #identificou um novo sistema
         if(line == "A=\n"):
+            proximoSistema = True
             saida.write("novo sistema detectado \n")
             saida.write("\n")
             A = []
@@ -36,7 +40,7 @@ def main():
 
         # detectou a matriz B
         #nesse caso se B = CANNONi o sistema entende que você gostaria de calcular a inversa de A
-        if(line == "B= CANNONi"):
+        if(line == "B= CANNONi\n" or line == "B= CANNONi"):
             B.extend([ [1.0 if i == j else 0.0 for j in range(len(A))]
                         for i in range(len(A)) ])
 
@@ -54,14 +58,15 @@ def main():
 
         # esta lendo B
         elif(controlReadB and line != "B=\n"):
-            print(line)
+
             readB(B,line,controlTipoInt,controlTipoFloat)
 
         #realiza a operacao LU apos a leitura de A e B do sistema da vez
-        if(len(A) != 0 and len(B) != 0 and controlReadA == False and controlReadB == False):
+        if(len(A) != 0 and len(B) != 0 and controlReadA == False and controlReadB == False and proximoSistema == True):
             LU.operation(A,B,controlCannon,saida)
             # SETA controlCannon(variavel que decide se vai resolver N sistemas para inversa) como falso
             controlCannon = False
+            proximoSistema = False
 
     #fecha os arquivos
     saida.close()

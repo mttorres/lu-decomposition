@@ -193,6 +193,8 @@ def operation(A,B,controlCanon,saida):
     saida.write(str(det))
     saida.write("\n")
 
+
+    ### REALIZA AS OPERAÇÕES DO SISTEMA#################
     operacoes = []  # matrizes E(eliminações gauss)(a inversa dela é igual a L)
     permutacoes = []  # matrizes P (trocas de linhas) (Pnx...P2xP1xP0)
     criaEscalonada(A,n,operacoes,permutacoes) # ao fim disso A = A' = U !
@@ -263,6 +265,7 @@ def operation(A,B,controlCanon,saida):
     saida.write(str(asarray(RESPOSTA)))
     saida.write("\n")
     saida.write("##################################################\n")
+    saida.write("\n")
     return
 
 
