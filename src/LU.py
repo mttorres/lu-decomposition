@@ -142,6 +142,9 @@ def retroSub(A,X,B,n,modo):
 
                 X[i] = X[i] / A[i][i]
 
+# resolve os sitemas
+# LY = B'
+# e UX=Y  respectivamente
 def resolveSistema(A, L, Blinha,n):
     X = []
     Y = []
@@ -149,6 +152,8 @@ def resolveSistema(A, L, Blinha,n):
     #retrosubstituicao
     retroSub(L,Y,Blinha,n,modo='L')
     retroSub(A, X, Y, n, modo='U')
+
+    return X
 
 
 
